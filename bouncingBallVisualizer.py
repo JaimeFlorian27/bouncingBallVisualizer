@@ -1,7 +1,35 @@
+import sys
+import os
+sys.path.append(os.path.abspath("C:\\Users\\Usuario\\OneDrive\\Escritorio\\Arte\\Programación\\Maya\\scripts\\bouncingBallVisualizer"))
+#maya imports
 import maya.cmds as cmds
 import maya.mel as mel
+import maya.OpenMayaUI as omui
+
+#ui imports
+from PySide2 import QtCore,QtWidgets,QtGui
+from bouncingBallVisualizer.ui.mainDialogUi import Ui_BBDialog
+
+from shiboken2 import wrapInstance
+def mayaMainWindow():
+    mainWindow = omui.MQtUtil.mainWindow()
+    return wrapInstance(int(mainWindow), QtWidgets.QWidget)
+
+class bouncingBallVisDialog(QtWidgets.QDialog):
+    def __init__(self,parent = mayaMainWindow()):
+        super(bouncingBallVisDialog,self).__init__(parent)
+
+        self.ui = Ui_BBDialog(self)
+        
+        self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
+
+dialog = bouncingBallVisDialog()
+dialog.show()
 
 
+
+
+#*****************************************************************************************************************************************
 class BouncingBall:
     def __init__(self):
         pass
