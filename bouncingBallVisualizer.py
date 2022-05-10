@@ -31,6 +31,7 @@ class BouncingBall:
 
     def create(self):
         #Get selected controller
+        cmds.undoInfo(ock=1)
         controllers = cmds.ls(sl = 1, tr=1)
         for controller in controllers:
 
@@ -49,6 +50,7 @@ class BouncingBall:
             cmds.delete(sphere)
             #selects sphere's shape
             cmds.select(sphere_shape)
+        cmds.undoInfo(cck=1)
 
     def check(self):
         '''checks if controller contains a bouncing ball '''
@@ -71,8 +73,8 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
         self.bouncingBall = BouncingBall()
         self.ui = Ui_BBDialog(self)
         self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
-
         self.createConnections()
+        self.sJob = cmds.scriptJob(event=['SelectionChanged', self.selectionChanged])
 
     def createConnections(self):
         self.ui.createButton.clicked.connect(self.createBouncingBall)
@@ -90,12 +92,27 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
            om.MGlobal.displayError(e.message)
         except Warning as e:
             om.MGlobal.displayWarning(e.message)
+
+    def selectionChanged(self):
+        if self.bouncingBall.check():
+           self.ui.createButton.setDisabled(True)
+        else:
+           self.ui.createButton.setEnabled(True)
+
+    def closeEvent(self,event):
+        cmds.scriptJob(k= self.sJob)
+        event.accept()
                 
 
-dialog = bouncingBallVisDialog()
-dialog.show()
+def showTestWindow():
+    global win
+    try:
+        win.close()
+    except: pass
+    win = bouncingBallVisDialog()
+    win.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+    win.show()
 
-
-
+showTestWindow()
 
 #*****************************************************************************************************************************************
