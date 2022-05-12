@@ -1,3 +1,4 @@
+from ntpath import join
 import sys
 import os
 sys.path.append(os.path.abspath("C:\\Users\\Usuario\\OneDrive\\Escritorio\\Arte\\Programación\\Maya\\scripts\\bouncingBallVisualizer"))
@@ -33,8 +34,10 @@ class BouncingBall:
         #Get selected controller
         cmds.undoInfo(ock=1)
         controllers = cmds.ls(sl = 1, tr=1)
+        notAdded = []
         for controller in controllers:
             if self.check(controller):
+                notAdded.append(controller)
                 continue
             #Create sphere
             sphere = cmds.polySphere(ch=1)
@@ -52,6 +55,8 @@ class BouncingBall:
             #selects sphere's shape
             cmds.select(sphere_shape)
         cmds.undoInfo(cck=1)
+        if notAdded:
+            om.MGlobal.displayWarning("Skipped : %s , Object(s) already had a bouncing ball." %(",".join(notAdded)) )
 
     def check(self, object):
         '''checks if controller contains a bouncing ball '''
