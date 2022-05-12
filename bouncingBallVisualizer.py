@@ -21,7 +21,7 @@ def mayaMainWindow():
 class Error(Exception):
     pass
 #Warning class definition
-class Warning(Exception):
+class Warning(Exception): 
     pass
 
 class BouncingBall:
@@ -34,7 +34,8 @@ class BouncingBall:
         cmds.undoInfo(ock=1)
         controllers = cmds.ls(sl = 1, tr=1)
         for controller in controllers:
-
+            if self.check(controller):
+                continue
             #Create sphere
             sphere = cmds.polySphere(ch=1)
             #Parent shape node
@@ -52,19 +53,15 @@ class BouncingBall:
             cmds.select(sphere_shape)
         cmds.undoInfo(cck=1)
 
-    def check(self):
+    def check(self, object):
         '''checks if controller contains a bouncing ball '''
-        objects = cmds.ls(sl=1, tr=1)
-        for object in objects:
-            shapes = cmds.listRelatives(object,s=1)
-            if shapes:
-                #if any of the shape nodes is a mesh
-                if any("mesh" in cmds.ls(s=1,showType=1) for s in shapes):
-                    #if any of those meshes is a sphere
-                    if any("Sphere" in s for s in shapes):
-                        return True
-        return False
-
+        shapes = cmds.listRelatives(object,s=1)
+        if shapes:
+            #if any of the shape nodes is a mesh
+            if any("mesh" in cmds.ls(s=1,showType=1) for s in shapes):
+                #if any of those meshes is a sphere
+                if any("Sphere" in s for s in shapes):
+                    return True
 
 class bouncingBallVisDialog(QtWidgets.QDialog):
     def __init__(self,parent = mayaMainWindow()):
@@ -74,18 +71,20 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
         self.ui = Ui_BBDialog(self)
         self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
         self.createConnections()
-        self.sJob = cmds.scriptJob(event=['SelectionChanged', self.selectionChanged])
+        #self.sJob = cmds.scriptJob(event=['SelectionChanged', self.selectionChanged])
 
     def createConnections(self):
-        self.ui.createButton.clicked.connect(self.createBouncingBall)
+       self.ui.createButton.clicked.connect(self.createBouncingBall)
+       pass
 
     def createBouncingBall(self):
         try:
-            if len(cmds.ls(sl=1, tr=1)) <1:
+            selected = cmds.ls(sl=1,tr=1)
+            if len(selected) <1:
                 raise Error("No controllers selected")
         
-            if self.bouncingBall.check():
-                raise Warning("Controller already has a bouncing ball")
+            #if self.bouncingBall.check(selected):
+            #    raise Warning("Controller already has a bouncing ball")
                 
             self.bouncingBall.create()
         except Error as e:
@@ -94,13 +93,14 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
             om.MGlobal.displayWarning(e.message)
 
     def selectionChanged(self):
-        if self.bouncingBall.check():
+        selected = cmds.ls(sl=1,tr=1)
+        if self.bouncingBall.check(selected):
            self.ui.createButton.setDisabled(True)
         else:
            self.ui.createButton.setEnabled(True)
 
     def closeEvent(self,event):
-        cmds.scriptJob(k= self.sJob)
+        #cmds.scriptJob(k= self.sJob)
         event.accept()
                 
 
@@ -116,3 +116,4 @@ def showTestWindow():
 showTestWindow()
 
 #*****************************************************************************************************************************************
+
