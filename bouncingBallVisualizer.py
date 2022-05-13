@@ -67,6 +67,22 @@ class BouncingBall:
                 #if any of those meshes is a sphere
                 if any("Sphere" in s for s in shapes):
                     return True
+    
+    def toggleBallVisibility(self):
+        controllers = cmds.ls(sl = 1, tr=1)
+        notAdded = []
+        for controller in controllers:
+            if self.check(controller):
+                notAdded.append(controller)
+                continue
+        shapes = cmds.listRelatives(s=1, pa=1)
+        if any("mesh" in cmds.ls(s=1,showType=1) for s in shapes):
+                #if any of those meshes is a sphere
+                if any("Sphere" in s for s in shapes):
+                    return True
+
+
+    
 
 class bouncingBallVisDialog(QtWidgets.QDialog):
     def __init__(self,parent = mayaMainWindow()):
