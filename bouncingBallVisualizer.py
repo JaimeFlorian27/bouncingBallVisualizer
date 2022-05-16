@@ -1,4 +1,3 @@
-from ntpath import join
 import sys
 import os
 sys.path.append(os.path.abspath("C:\\Users\\Usuario\\OneDrive\\Escritorio\\Arte\\Programación\\Maya\\scripts\\bouncingBallVisualizer"))
@@ -44,8 +43,8 @@ class BouncingBall:
             #Parent shape node
             sphere_shape = cmds.listRelatives(s=1, pa=1)
             cmds.parent(sphere_shape,controller, r=1, s=1)
-            #save sphere's shape new long name 
             sphere_shape = cmds.ls(sl=1, l=1)
+            #save sphere's shape new long name 
             self.bouncingBalls.append(sphere_shape)
             #set checker texture (REMEMBER TO ADD THE CREATION OF THE TEXTURE TO THE CODE)
             cmds.sets( e=True, forceElement= 'checkerSG' )
@@ -69,17 +68,30 @@ class BouncingBall:
                     return True
     
     def toggleBallVisibility(self):
-        controllers = cmds.ls(sl = 1, tr=1)
-        notAdded = []
-        for controller in controllers:
-            if self.check(controller):
-                notAdded.append(controller)
-                continue
-        shapes = cmds.listRelatives(s=1, pa=1)
-        if any("mesh" in cmds.ls(s=1,showType=1) for s in shapes):
-                #if any of those meshes is a sphere
-                if any("Sphere" in s for s in shapes):
-                    return True
+        try:
+            controllers = cmds.ls(sl = 1, tr=1)
+            noBall = []
+            for controller in controllers:
+                if not self.check(controller):
+                    noBall.append(controller)
+                    continue
+                shapes = cmds.listRelatives(s=1, pa=1)
+                print(shapes)
+                for shape in shapes:
+                    print(shape)
+                    cmds.select(shape)
+                    shapeType = cmds.ls(sl=1,s=1,showType=1)
+                    print(shapeType)
+                    if  shapeType[1] =="mesh":
+                        vis = cmds.getAttr("%s.visibility" %(shape))
+                        if vis:
+                            cmds.setAttr("%s.visibility" %(shape), 0)
+                        else:
+                            cmds.setAttr("%s.visibility" %(shape), 1)
+            cmds.select(controllers)
+        except Error as e:
+           om.MGlobal.displayError(e.message)
+                    
 
 
     
@@ -96,6 +108,7 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
 
     def createConnections(self):
        self.ui.createButton.clicked.connect(self.createBouncingBall)
+       self.ui.ballVisibilityButton.clicked.connect(self.bouncingBall.toggleBallVisibility)
        pass
 
     def createBouncingBall(self):
@@ -137,4 +150,6 @@ def showTestWindow():
 showTestWindow()
 
 #*****************************************************************************************************************************************
+
+
 
