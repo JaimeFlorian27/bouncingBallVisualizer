@@ -47,7 +47,7 @@ class BouncingBall:
                 continue
             controllerUuid = cmds.ls(controller, uuid=1)
             attrName = "uuid_"+controller.replace(":","")
-            cmds.addAttr("bouncingBallVisualizer", longName=attrName, dt='string')
+            cmds.addAttr("bouncingBallVisualizer", longName=attrName, dt='string', category = "Controller")
             cmds.setAttr("bouncingBallVisualizer.%s" %attrName,controllerUuid[0],type="string")
             #Create sphere
             sphere = cmds.polySphere(ch=1)
@@ -131,7 +131,7 @@ class BouncingBall:
         if noBall:
                 om.MGlobal.displayWarning("Skipped : %s , Object(s) don't have a nurbsCurve controller." %(",".join(noBall)) )            
     
-    def ControllersVisibility(self,vis):
+    def AllObjectsVisibility(self,vis,type):
         controllers = []
         uuids = cmds.listAttr("bouncingBallVisualizer", ud=1)
         for uuidName in uuids:
@@ -145,7 +145,7 @@ class BouncingBall:
                 cmds.select(shape)
                 shapeType = cmds.ls(sl=1,s=1,showType=1)
                 print(shapeType)
-                if  shapeType[1] =="nurbsCurve":
+                if  shapeType[1] ==type:
                     cmds.setAttr("%s.visibility" %shape, vis)
     
     def refreshControllersList(self):
@@ -167,8 +167,10 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
        self.ui.createButton.clicked.connect(self.createBouncingBall)
        self.ui.ballVisibilityButton.clicked.connect(self.toggleBallVisibility)
        self.ui.controllerVisibilityButton.clicked.connect(self.toggleControllerVisibility)
-       self.ui.controllerAllOnButton.clicked.connect(self.AllControllersOn)
-       self.ui.controllerAllOffButton.clicked.connect(self.AllControllersOff)
+       self.ui.controllerAllOnButton.clicked.connect(self.AllObjectsVisibility)
+       self.ui.controllerAllOffButton.clicked.connect(self.AllObjectsVisibility)
+       self.ui.ballAllOnButton.clicked.connect(self.AllObjectsVisibility)
+       self.ui.ballAllOffButton.clicked.connect(self.AllObjectsVisibility)
        pass
 
     def createBouncingBall(self):
@@ -216,17 +218,18 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
         except Warning as e:
             om.MGlobal.displayWarning(e.message)
 
-    def AllControllersOff(self):
-        try:
-            self.bouncingBall.ControllersVisibility(False)
-        except Error as e:
-            om.MGlobal.displayError(e.message)
-        except Warning as e:
-            om.MGlobal.displayWarning(e.message)
+    def AllObjectsVisibility(self):
+        sender = self.sender()
 
-    def AllControllersOn(self):
         try:
-            self.bouncingBall.ControllersVisibility(True)
+            if sender == self.ui.controllerAllOffButton:
+                self.bouncingBall.AllObjectsVisibility(False,"nurbsCurve")
+            if sender == self.ui.controllerAllOnButton:
+                self.bouncingBall.AllObjectsVisibility(True,"nurbsCurve")
+            if sender == self.ui.ballAllOffButton:
+                self.bouncingBall.AllObjectsVisibility(False,"mesh")
+            if sender == self.ui.ballAllOnButton:
+                self.bouncingBall.AllObjectsVisibility(True,"mesh")
         except Error as e:
             om.MGlobal.displayError(e.message)
         except Warning as e:

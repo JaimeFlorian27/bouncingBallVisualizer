@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
+ <author>Jaime Florian Urueta</author>
  <class>BBDialog</class>
  <widget class="QDialog" name="BBDialog">
   <property name="geometry">
@@ -7,7 +8,7 @@
     <x>0</x>
     <y>0</y>
     <width>397</width>
-    <height>232</height>
+    <height>333</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,13 +30,54 @@
       <string>Create Bouncing ball</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QPushButton" name="createButton">
+      <item row="1" column="0">
+       <widget class="QFrame" name="radiusFrame">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="labelRadius">
+           <property name="text">
+            <string>Radius</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="radiusSpinBox"/>
+         </item>
+         <item>
+          <widget class="QSlider" name="radiusSlider">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QPushButton" name="createButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>52</height>
+         </size>
         </property>
         <property name="text">
          <string>View as bouncing ball</string>
@@ -51,8 +93,8 @@
       <string>Toggle Visibility</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="2" column="3">
-       <widget class="QPushButton" name="controllerAllOnButton">
+      <item row="2" column="0">
+       <widget class="QPushButton" name="ballAllOnButton">
         <property name="text">
          <string>All on</string>
         </property>
@@ -65,29 +107,22 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="4">
-       <widget class="QPushButton" name="controllerAllOffButton">
+      <item row="2" column="1">
+       <widget class="QPushButton" name="ballAllOffButton">
         <property name="text">
          <string>All off</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="3" colspan="2">
-       <widget class="QPushButton" name="controllerVisibilityButton">
-        <property name="text">
-         <string>Controller visibility</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QPushButton" name="ballAllOnButton">
+      <item row="2" column="3">
+       <widget class="QPushButton" name="controllerAllOnButton">
         <property name="text">
          <string>All on</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QPushButton" name="ballAllOffButton">
+      <item row="2" column="4">
+       <widget class="QPushButton" name="controllerAllOffButton">
         <property name="text">
          <string>All off</string>
         </property>
@@ -109,11 +144,61 @@
         </property>
        </spacer>
       </item>
+      <item row="3" column="0" colspan="5">
+       <widget class="QPushButton" name="isolateViewButton">
+        <property name="text">
+         <string>Isolate view on Controllers</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3" colspan="2">
+       <widget class="QPushButton" name="controllerVisibilityButton">
+        <property name="text">
+         <string>nurbsCurve visibility</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="deleteGroupBox">
+     <property name="title">
+      <string>Delete Bouncing ball</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QPushButton" name="deleteSelectedButton">
+        <property name="text">
+         <string>Delete from selected</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="deleteAllButton">
+        <property name="text">
+         <string>Delete all</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>createButton</tabstop>
+  <tabstop>radiusSlider</tabstop>
+  <tabstop>ballVisibilityButton</tabstop>
+  <tabstop>ballAllOnButton</tabstop>
+  <tabstop>ballAllOffButton</tabstop>
+  <tabstop>controllerVisibilityButton</tabstop>
+  <tabstop>controllerAllOnButton</tabstop>
+  <tabstop>controllerAllOffButton</tabstop>
+  <tabstop>isolateViewButton</tabstop>
+  <tabstop>deleteSelectedButton</tabstop>
+  <tabstop>deleteAllButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
