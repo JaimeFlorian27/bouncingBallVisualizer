@@ -27,19 +27,16 @@ class Warning(Exception):
 class BouncingBall:
     def __init__(self):
         self.controllers = []
-        self.bouncingBallVisualizer = ""
+        self.bouncingBallVisualizerNode = ""
         if not cmds.objExists('bouncingBallVisualizer'):
-            self.bouncingBallVisualizer = cmds.createNode( 'bouncingBallVisualizer', n="bouncingBallVisualizer")
-        try:
-            cmds.editDisplayLayerGlobals( cdl='BouncingBalls_SphereShapes' )
-        except:
-            cmds.createDisplayLayer(e=1, n= "BouncingBalls_SphereShapes")
-        pass
+            self.bouncingBallVisualizerNode = cmds.createNode( 'bouncingBallVisualizer', n="bouncingBallVisualizer")
 
     def create(self):
+        self.checkNode()
         #Get selected controller
-        cmds.undoInfo(ock=1)
         controllers = cmds.ls(sl = 1, tr=1)
+        if len(controllers) <1:
+            raise Error("No controllers selected")
         notAdded = []
         for controller in controllers:
             if self.check(controller):
@@ -47,8 +44,7 @@ class BouncingBall:
                 continue
             controllerUuid = cmds.ls(controller, uuid=1)
             attrName = "uuid_"+controller.replace(":","")
-            cmds.addAttr("bouncingBallVisualizer", longName=attrName, dt='string', category = "Controller")
-            cmds.setAttr("bouncingBallVisualizer.%s" %attrName,controllerUuid[0],type="string")
+            self.addControllerToList(attrName,controllerUuid)
             #Create sphere
             sphere = cmds.polySphere(ch=1)
             #Parent shape node
@@ -64,8 +60,6 @@ class BouncingBall:
             #selects sphere's shape
             cmds.select(sphere_shape)
             self.controllers.append(controller)
-        cmds.undoInfo(cck=1)
-        print
         if notAdded:
             om.MGlobal.displayWarning("Skipped : %s , Object(s) already had a bouncing ball." %(",".join(notAdded)) )
 
@@ -80,34 +74,37 @@ class BouncingBall:
                     return True
     
     def toggleBallVisibility(self):
-            cmds.undoInfo(ock=1)
-            controllers = cmds.ls(sl = 1, tr=1)
-            noBall = []
-            for controller in controllers:
-                if not self.check(controller):
-                    noBall.append(controller)
-                    continue
-                shapes = cmds.listRelatives(s=1, pa=1)
-                print(shapes)
-                for shape in shapes:
-                    print(shape)
-                    cmds.select(shape)
-                    shapeType = cmds.ls(sl=1,s=1,showType=1)
-                    print(shapeType)
-                    if  shapeType[1] =="mesh":
-                        vis = cmds.getAttr("%s.visibility" %(shape))
-                        if vis:
-                            cmds.setAttr("%s.visibility" %(shape), 0)
-                        else:
-                            cmds.setAttr("%s.visibility" %(shape), 1)
-            cmds.select(controllers)
-            cmds.undoInfo(cck=1)
-            if noBall:
-                om.MGlobal.displayWarning("Skipped : %s , Object(s) don't have a bouncing ball." %(",".join(noBall)) )
+        self.checkNode()
+        controllers = cmds.ls(sl = 1, tr=1)
+        noBall = []
+        if len(controllers) <1:
+            raise Error("No controllers selected")
+        for controller in controllers:
+            if not self.check(controller):
+                noBall.append(controller)
+                continue
+            shapes = cmds.listRelatives(s=1, pa=1)
+            print(shapes)
+            for shape in shapes:
+                print(shape)
+                cmds.select(shape)
+                shapeType = cmds.ls(sl=1,s=1,showType=1)
+                print(shapeType)
+                if  shapeType[1] =="mesh":
+                    vis = cmds.getAttr("%s.visibility" %(shape))
+                    if vis:
+                        cmds.setAttr("%s.visibility" %(shape), 0)
+                    else:
+                        cmds.setAttr("%s.visibility" %(shape), 1)
+        cmds.select(controllers)
+        if noBall:
+            om.MGlobal.displayWarning("Skipped : %s , Object(s) don't have a bouncing ball." %(",".join(noBall)) )
 
     def toggleControllerVisibility(self):
-        cmds.undoInfo(ock=1)
+        self.checkNode()
         controllers = cmds.ls(sl = 1, tr=1)
+        if len(controllers) <1:
+            raise Error("No controllers selected")
         noBall = []
         for controller in controllers:
             if not self.check(controller):
@@ -127,16 +124,15 @@ class BouncingBall:
                     else:
                         cmds.setAttr("%s.visibility" %(shape), 1)
         cmds.select(controllers)
-        cmds.undoInfo(cck=1)
         if noBall:
                 om.MGlobal.displayWarning("Skipped : %s , Object(s) don't have a nurbsCurve controller." %(",".join(noBall)) )            
     
     def AllObjectsVisibility(self,vis,type):
-        controllers = []
-        uuids = cmds.listAttr("bouncingBallVisualizer", ud=1)
-        for uuidName in uuids:
-            id = cmds.getAttr("bouncingBallVisualizer.%s" %uuidName)
-            controllers.append(cmds.ls(id))
+        self.checkNode()
+        previousSelected= cmds.ls(sl=1)
+        controllers = self.controllersFromUuid()
+        if len(controllers) <1:
+            raise Error("No controllers selected")
         for controller in controllers:
             shapes = cmds.listRelatives(controller,s=1, pa=1)
             print(shapes)
@@ -147,9 +143,70 @@ class BouncingBall:
                 print(shapeType)
                 if  shapeType[1] ==type:
                     cmds.setAttr("%s.visibility" %shape, vis)
+        cmds.select(previousSelected)
     
-    def refreshControllersList(self):
-        cmds.ls()
+    def isolateViewOnControllers(self):
+        self.checkNode()
+        previousSelected = cmds.ls(sl=1)
+        cmds.select(clear=1)
+        controllers = self.controllersFromUuid()
+        cmds.select(controllers)
+        currentPanel = cmds.paneLayout('viewPanes', q=True, pane1=True)
+        state = cmds.isolateSelect( currentPanel,q=1, s=1)
+        cmds.isolateSelect( currentPanel, s=not state)
+        cmds.isolateSelect( currentPanel, addSelected=True)
+        cmds.select(previousSelected)
+
+    def deleteBalls(self, all):
+        self.checkNode()
+        controllers = []
+        if all:
+            controllers = self.controllersFromUuid()
+        else:
+            controllers = cmds.ls(sl = 1, tr=1)
+        if len(controllers) <1:
+            raise Error("No controllers with bouncing balls on the scene")
+        noBall = []
+        for controller in controllers:
+            if not self.check(controller):
+                noBall.append(controller)
+                continue
+            shapes = cmds.listRelatives(controller,s=1, pa=1)
+            print(shapes)
+            for shape in shapes:
+                print(shape)
+                cmds.select(shape)
+                shapeType = cmds.ls(sl=1,s=1,showType=1)
+                print(shapeType)
+                if  shapeType[1] =="mesh":
+                    attrName = "uuid_"+ controller.replace(":","")
+                    cmds.deleteAttr("bouncingBallVisualizer.%s" %attrName)
+                    cmds.delete(shape)
+        cmds.select(controllers)
+        if noBall:
+            om.MGlobal.displayWarning("Skipped : %s , Object(s) don't have a bouncing ball." %(",".join(noBall)) )
+
+
+    
+    def controllersFromUuid(self):
+        self.checkNode()
+        controllers = []
+        uuids = cmds.listAttr("bouncingBallVisualizer", ud=1)
+        if uuids == None:
+            raise Error("No controllers with bouncing balls on the scene")
+        for uuidName in uuids:
+            id = cmds.getAttr("bouncingBallVisualizer.%s" %uuidName)
+            controllers.append(cmds.ls(id)[0])
+        return controllers
+
+    def addControllerToList(self, attrName,attrValue):
+        self.checkNode()
+        cmds.addAttr("bouncingBallVisualizer", longName=attrName, dt='string', category = "Controller")
+        cmds.setAttr("bouncingBallVisualizer.%s" %attrName,attrValue[0],type="string")
+
+    def checkNode(self):
+        if not cmds.objExists('bouncingBallVisualizer'):
+            self.bouncingBallVisualizerNode = cmds.createNode( 'bouncingBallVisualizer', n="bouncingBallVisualizer")
 
     
 
@@ -171,56 +228,42 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
        self.ui.controllerAllOffButton.clicked.connect(self.AllObjectsVisibility)
        self.ui.ballAllOnButton.clicked.connect(self.AllObjectsVisibility)
        self.ui.ballAllOffButton.clicked.connect(self.AllObjectsVisibility)
-       pass
-
+       self.ui.isolateViewButton.clicked.connect(self.isolateViewOnControllers)
+       self.ui.deleteSelectedButton.clicked.connect(self.deleteBouncingBalls)
+       self.ui.deleteAllButton.clicked.connect(self.deleteBouncingBalls)
     def createBouncingBall(self):
-        try:
-            selected = cmds.ls(sl=1,tr=1)
-            if len(selected) <1:
-                raise Error("No controllers selected")
-        
-            #if self.bouncingBall.check(selected):
-            #    raise Warning("Controller already has a bouncing ball")
-                
+        cmds.undoInfo(ock=1)
+        try:    
             self.bouncingBall.create()
         except Error as e:
            om.MGlobal.displayError(e.message)
         except Warning as e:
             om.MGlobal.displayWarning(e.message)
+        cmds.undoInfo(cck=1)
 
     def toggleBallVisibility(self):
+        cmds.undoInfo(ock=1)
         try:
-            selected = cmds.ls(sl=1,tr=1)
-            if len(selected) <1:
-                raise Error("No controllers selected")
-        
-            #if self.bouncingBall.check(selected):
-            #    raise Warning("Controller already has a bouncing ball")
-                
             self.bouncingBall.toggleBallVisibility()
         except Error as e:
            om.MGlobal.displayError(e.message)
         except Warning as e:
             om.MGlobal.displayWarning(e.message)
+        cmds.undoInfo(cck=1)
 
     def toggleControllerVisibility(self):
+        cmds.undoInfo(ock=1)
         try:
-            selected = cmds.ls(sl=1,tr=1)
-            if len(selected) <1:
-                raise Error("No controllers selected")
-        
-            #if self.bouncingBall.check(selected):
-            #    raise Warning("Controller already has a bouncing ball")
-                
             self.bouncingBall.toggleControllerVisibility()
         except Error as e:
             om.MGlobal.displayError(e.message)
         except Warning as e:
             om.MGlobal.displayWarning(e.message)
+        cmds.undoInfo(cck=1)
 
     def AllObjectsVisibility(self):
+        cmds.undoInfo(ock=1)
         sender = self.sender()
-
         try:
             if sender == self.ui.controllerAllOffButton:
                 self.bouncingBall.AllObjectsVisibility(False,"nurbsCurve")
@@ -234,6 +277,28 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
             om.MGlobal.displayError(e.message)
         except Warning as e:
             om.MGlobal.displayWarning(e.message)
+        cmds.undoInfo(cck=1)
+    def isolateViewOnControllers(self):
+        try:
+            self.bouncingBall.isolateViewOnControllers()
+        except Error as e:
+            om.MGlobal.displayError(e.message)
+        except Warning as e:
+            om.MGlobal.displayWarning(e.message)
+    def deleteBouncingBalls(self):
+        cmds.undoInfo(ock=1)
+        sender = self.sender()
+        try:
+
+            if sender == self.ui.deleteAllButton:
+                self.bouncingBall.deleteBalls(all = True)
+            if sender == self.ui.deleteSelectedButton:
+                self.bouncingBall.deleteBalls(all = False)
+        except Error as e:
+            om.MGlobal.displayError(e.message)
+        except Warning as e:
+            om.MGlobal.displayWarning(e.message)
+        cmds.undoInfo(cck=1)
 
     def selectionChanged(self):
         selected = cmds.ls(sl=1,tr=1)
