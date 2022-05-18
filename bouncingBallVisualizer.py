@@ -28,8 +28,7 @@ class BouncingBall:
     def __init__(self):
         self.controllers = []
         self.bouncingBallVisualizerNode = ""
-        if not cmds.objExists('bouncingBallVisualizer'):
-            self.bouncingBallVisualizerNode = cmds.createNode( 'bouncingBallVisualizer', n="bouncingBallVisualizer")
+        self.checkNode()
 
     def create(self):
         self.checkNode()
@@ -53,13 +52,13 @@ class BouncingBall:
             sphere_shape = cmds.ls(sl=1, l=1)
             #save sphere's shape new long name 
             #set checker texture (REMEMBER TO ADD THE CREATION OF THE TEXTURE TO THE CODE)
-            cmds.sets( e=True, forceElement= 'checkerSG' )
+            cmds.sets( e=True, forceElement= 'bouncingBallSG' )
             #Selectes adn deletes old transform node
             sphere = cmds.ls (sphere, tr=1)
             cmds.delete(sphere)
             #selects sphere's shape
-            cmds.select(sphere_shape)
             self.controllers.append(controller)
+        cmds.select(controllers)
         if notAdded:
             om.MGlobal.displayWarning("Skipped : %s , Object(s) already had a bouncing ball." %(",".join(notAdded)) )
 
@@ -83,13 +82,10 @@ class BouncingBall:
             if not self.check(controller):
                 noBall.append(controller)
                 continue
-            shapes = cmds.listRelatives(s=1, pa=1)
-            print(shapes)
+            shapes = cmds.listRelatives(controller,s=1, pa=1)
             for shape in shapes:
-                print(shape)
                 cmds.select(shape)
                 shapeType = cmds.ls(sl=1,s=1,showType=1)
-                print(shapeType)
                 if  shapeType[1] =="mesh":
                     vis = cmds.getAttr("%s.visibility" %(shape))
                     if vis:
@@ -110,13 +106,10 @@ class BouncingBall:
             if not self.check(controller):
                 noBall.append(controller)
                 continue
-            shapes = cmds.listRelatives(s=1, pa=1)
-            print(shapes)
+            shapes = cmds.listRelatives(controller,s=1, pa=1)
             for shape in shapes:
-                print(shape)
                 cmds.select(shape)
                 shapeType = cmds.ls(sl=1,s=1,showType=1)
-                print(shapeType)
                 if  shapeType[1] =="nurbsCurve":
                     vis = cmds.getAttr("%s.visibility" %(shape))
                     if vis:
@@ -135,12 +128,9 @@ class BouncingBall:
             raise Error("No controllers selected")
         for controller in controllers:
             shapes = cmds.listRelatives(controller,s=1, pa=1)
-            print(shapes)
             for shape in shapes:
-                print(shape)
                 cmds.select(shape)
                 shapeType = cmds.ls(sl=1,s=1,showType=1)
-                print(shapeType)
                 if  shapeType[1] ==type:
                     cmds.setAttr("%s.visibility" %shape, vis)
         cmds.select(previousSelected)
@@ -172,12 +162,9 @@ class BouncingBall:
                 noBall.append(controller)
                 continue
             shapes = cmds.listRelatives(controller,s=1, pa=1)
-            print(shapes)
             for shape in shapes:
-                print(shape)
                 cmds.select(shape)
                 shapeType = cmds.ls(sl=1,s=1,showType=1)
-                print(shapeType)
                 if  shapeType[1] =="mesh":
                     attrName = "uuid_"+ controller.replace(":","")
                     cmds.deleteAttr("bouncingBallVisualizer.%s" %attrName)
@@ -196,10 +183,8 @@ class BouncingBall:
             if not self.check(controller):
                 noBall.append(controller)
                 continue
-            shapes = cmds.listRelatives(s=1, pa=1)
-            print(shapes)
+            shapes = cmds.listRelatives(controller,s=1, pa=1)
             for shape in shapes:
-                print(shape)
                 cmds.select(shape)
                 shapeType = cmds.ls(sl=1,s=1,showType=1)
                 if  shapeType[1] =="mesh":
@@ -229,6 +214,24 @@ class BouncingBall:
     def checkNode(self):
         if not cmds.objExists('bouncingBallVisualizer'):
             self.bouncingBallVisualizerNode = cmds.createNode( 'bouncingBallVisualizer', n="bouncingBallVisualizer")
+        if not cmds.objExists('bouncingBallSG'):
+            self.createShader()
+
+    
+    def createShader(self):
+        checker=cmds.shadingNode("checker", name = 'bouncingBallCheckerTexture', asTexture=True)
+        bb2DTexture=cmds.shadingNode("place2dTexture", name = 'bouncingBallPlace2dTexture', asUtility=True)
+
+        cmds.connectAttr('%s.outUV' %bb2DTexture,'%s.uvCoord' %checker)
+        cmds.connectAttr('%s.outUvFilterSize' %bb2DTexture, '%s.uvFilterSize' %checker)
+
+        cmds.setAttr("%s.repeatU" %bb2DTexture, 4.0)      
+        cmds.setAttr("%s.repeatV" %bb2DTexture, 4.0)
+
+        material = cmds.shadingNode("lambert", name="bouncingBallMaterial", asShader=True)
+        cmds.connectAttr("%s.outColor" %checker, "%s.color" %material )
+        sg = cmds.sets(name="bouncingBallSG" , empty=True, renderable=True, noSurfaceShader=True)
+        cmds.connectAttr("%s.outColor" % material, "%s.surfaceShader" % sg)
 
     
 
