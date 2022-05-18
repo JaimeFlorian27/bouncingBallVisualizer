@@ -186,6 +186,28 @@ class BouncingBall:
         if noBall:
             om.MGlobal.displayWarning("Skipped : %s , Object(s) don't have a bouncing ball." %(",".join(noBall)) )
 
+    def changeRadius(self,value):
+        self.checkNode()
+        controllers = cmds.ls(sl = 1, tr=1)
+        if len(controllers) <1:
+            raise Error("No controllers selected")
+        noBall = []
+        for controller in controllers:
+            if not self.check(controller):
+                noBall.append(controller)
+                continue
+            shapes = cmds.listRelatives(s=1, pa=1)
+            print(shapes)
+            for shape in shapes:
+                print(shape)
+                cmds.select(shape)
+                shapeType = cmds.ls(sl=1,s=1,showType=1)
+                if  shapeType[1] =="mesh":
+                    editable_shape = cmds.listConnections(shape)[1]
+                    cmds.setAttr("%s.radius" %(editable_shape), value)
+        cmds.select(controllers)
+        if noBall:
+                om.MGlobal.displayWarning("Skipped : %s , Object(s) don't have a bouncing ball controller." %(",".join(noBall)) )
 
     
     def controllersFromUuid(self):
@@ -218,7 +240,7 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
         self.ui = Ui_BBDialog(self)
         self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
         self.createConnections()
-        #self.sJob = cmds.scriptJob(event=['SelectionChanged', self.selectionChanged])
+        self.sJob = cmds.scriptJob(event=['SelectionChanged', self.selectionChanged])
 
     def createConnections(self):
        self.ui.createButton.clicked.connect(self.createBouncingBall)
@@ -231,6 +253,8 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
        self.ui.isolateViewButton.clicked.connect(self.isolateViewOnControllers)
        self.ui.deleteSelectedButton.clicked.connect(self.deleteBouncingBalls)
        self.ui.deleteAllButton.clicked.connect(self.deleteBouncingBalls)
+       self.ui.radiusSlider.valueChanged.connect(self.changeRadius)
+       self.ui.radiusSpinBox.valueChanged.connect(self.changeRadius)
     def createBouncingBall(self):
         cmds.undoInfo(ock=1)
         try:    
@@ -289,7 +313,6 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
         cmds.undoInfo(ock=1)
         sender = self.sender()
         try:
-
             if sender == self.ui.deleteAllButton:
                 self.bouncingBall.deleteBalls(all = True)
             if sender == self.ui.deleteSelectedButton:
@@ -303,15 +326,34 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
     def selectionChanged(self):
         selected = cmds.ls(sl=1,tr=1)
         if self.bouncingBall.check(selected):
-           self.ui.createButton.setDisabled(True)
+           self.ui.radiusFrame.setVisible(True)
         else:
-           self.ui.createButton.setEnabled(True)
+           self.ui.radiusFrame.setVisible(False)
 
-
+    def changeRadius(self):
+        cmds.undoInfo(ock=1)
+        try:
+            sender = self.sender()
+            radius = 0
+            if sender == self.ui.radiusSlider:
+                radius = self.ui.radiusSlider.value()
+                self.ui.radiusSpinBox.setValue(radius)
+            else:
+                radius = self.ui.radiusSpinBox.value()
+                self.ui.radiusSlider.setValue(radius)
+            self.bouncingBall.changeRadius(radius)
+        except Error as e:
+            om.MGlobal.displayError(e.message)
+        except Warning as e:
+            om.MGlobal.displayWarning(e.message)
+        cmds.undoInfo(cck=1)
+    
     def closeEvent(self,event):
-        #cmds.scriptJob(k= self.sJob)
+        cmds.scriptJob(k=self.sJob)
         event.accept()
-                
+        
+
+
 
 def showTestWindow():
     global win

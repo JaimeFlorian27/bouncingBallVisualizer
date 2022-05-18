@@ -7,7 +7,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>397</width>
+    <width>403</width>
     <height>333</height>
    </rect>
   </property>
@@ -32,6 +32,9 @@
      <layout class="QGridLayout" name="gridLayout">
       <item row="1" column="0">
        <widget class="QFrame" name="radiusFrame">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -93,17 +96,24 @@
       <string>Toggle Visibility</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="2" column="0">
+      <item row="2" column="2">
        <widget class="QPushButton" name="ballAllOnButton">
         <property name="text">
          <string>All on</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="0" colspan="2">
-       <widget class="QPushButton" name="ballVisibilityButton">
+      <item row="2" column="5">
+       <widget class="QPushButton" name="controllerAllOnButton">
         <property name="text">
-         <string>Ball visibility</string>
+         <string>All on</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4" colspan="2">
+       <widget class="QPushButton" name="controllerVisibilityButton">
+        <property name="text">
+         <string>nurbsCurve visibility</string>
         </property>
        </widget>
       </item>
@@ -114,10 +124,16 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="3">
-       <widget class="QPushButton" name="controllerAllOnButton">
+      <item row="3" column="0" colspan="6">
+       <widget class="QPushButton" name="isolateViewButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
-         <string>All on</string>
+         <string>Isolate view on Controllers</string>
         </property>
        </widget>
       </item>
@@ -128,7 +144,7 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="2">
+      <item row="2" column="3">
        <spacer name="ButtonsHorizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -144,17 +160,10 @@
         </property>
        </spacer>
       </item>
-      <item row="3" column="0" colspan="5">
-       <widget class="QPushButton" name="isolateViewButton">
+      <item row="0" column="1" colspan="2">
+       <widget class="QPushButton" name="ballVisibilityButton">
         <property name="text">
-         <string>Isolate view on Controllers</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3" colspan="2">
-       <widget class="QPushButton" name="controllerVisibilityButton">
-        <property name="text">
-         <string>nurbsCurve visibility</string>
+         <string>Ball visibility</string>
         </property>
        </widget>
       </item>
@@ -189,12 +198,8 @@
  <tabstops>
   <tabstop>createButton</tabstop>
   <tabstop>radiusSlider</tabstop>
-  <tabstop>ballVisibilityButton</tabstop>
-  <tabstop>ballAllOnButton</tabstop>
   <tabstop>ballAllOffButton</tabstop>
   <tabstop>controllerVisibilityButton</tabstop>
-  <tabstop>controllerAllOnButton</tabstop>
-  <tabstop>controllerAllOffButton</tabstop>
   <tabstop>isolateViewButton</tabstop>
   <tabstop>deleteSelectedButton</tabstop>
   <tabstop>deleteAllButton</tabstop>
