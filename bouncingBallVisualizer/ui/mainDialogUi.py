@@ -46,11 +46,16 @@ class Ui_BBDialog(object):
 
         self.radiusSpinBox = QDoubleSpinBox(self.radiusFrame)
         self.radiusSpinBox.setObjectName(u"radiusSpinBox")
+        self.radiusSpinBox.setMinimum(0.010000000000000)
+        self.radiusSpinBox.setMaximum(98.989999999999995)
+        self.radiusSpinBox.setValue(1.000000000000000)
 
         self.horizontalLayout.addWidget(self.radiusSpinBox)
 
         self.radiusSlider = QSlider(self.radiusFrame)
         self.radiusSlider.setObjectName(u"radiusSlider")
+        self.radiusSlider.setValue(1)
+        self.radiusSlider.setSliderPosition(1)
         self.radiusSlider.setOrientation(Qt.Horizontal)
 
         self.horizontalLayout.addWidget(self.radiusSlider)

@@ -48,10 +48,16 @@ class BouncingBall:
             sphere = cmds.polySphere(ch=1)
             #Parent shape node
             sphere_shape = cmds.listRelatives(s=1, pa=1)
-            cmds.parent(sphere_shape,controller, r=1, s=1)
-            sphere_shape = cmds.ls(sl=1, l=1)
+            cmds.parent(sphere_shape,controller,r=1, s=1)
             #save sphere's shape new long name 
-            #set checker texture (REMEMBER TO ADD THE CREATION OF THE TEXTURE TO THE CODE)
+            sphere_shape = cmds.ls(sl=1, l=1)
+
+            pivot = cmds.xform(controller, piv=True , q=True , ws=True)
+            vtxs = cmds.ls("%s.vtx[*]"%sphere_shape[0], fl=True)
+            for vtx in vtxs:
+                cmds.move(pivot[0],pivot[1],pivot[2], vtx,a=1, ws=1)
+
+            #set checker texture 
             cmds.sets( e=True, forceElement= 'bouncingBallSG' )
             #Selectes adn deletes old transform node
             sphere = cmds.ls (sphere, tr=1)
