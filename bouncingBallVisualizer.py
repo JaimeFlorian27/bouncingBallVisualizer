@@ -88,17 +88,18 @@ class BouncingBall:
                 shapeType = cmds.ls(sl=1,s=1,showType=1)
                 if  shapeType[1] =="mesh":
                     vis = cmds.getAttr("%s.visibility" %(shape))
-                    if vis:
-                        cmds.setAttr("%s.visibility" %(shape), 0)
-                    else:
-                        cmds.setAttr("%s.visibility" %(shape), 1)
+                    cmds.setAttr("%s.visibility" %(shape), not vis)
         cmds.select(controllers)
         if noBall:
             om.MGlobal.displayWarning("Skipped : %s , Object(s) don't have a bouncing ball." %(",".join(noBall)) )
 
-    def toggleControllerVisibility(self):
+    def toggleControllerVisibility(self, deleting):
         self.checkNode()
-        controllers = cmds.ls(sl = 1, tr=1)
+        controllers = []
+        if deleting:
+            controllers = self.controllersFromUuid()
+        else:    
+            controllers = cmds.ls(sl = 1, tr=1)
         if len(controllers) <1:
             raise Error("No controllers selected")
         noBall = []
@@ -111,11 +112,12 @@ class BouncingBall:
                 cmds.select(shape)
                 shapeType = cmds.ls(sl=1,s=1,showType=1)
                 if  shapeType[1] =="nurbsCurve":
-                    vis = cmds.getAttr("%s.visibility" %(shape))
-                    if vis:
-                        cmds.setAttr("%s.visibility" %(shape), 0)
-                    else:
+                    if deleting:
                         cmds.setAttr("%s.visibility" %(shape), 1)
+                    else:
+                        vis = cmds.getAttr("%s.visibility" %(shape))
+                        cmds.setAttr("%s.visibility" %(shape), not vis)
+
         cmds.select(controllers)
         if noBall:
                 om.MGlobal.displayWarning("Skipped : %s , Object(s) don't have a nurbsCurve controller." %(",".join(noBall)) )            
@@ -157,6 +159,7 @@ class BouncingBall:
         if len(controllers) <1:
             raise Error("No controllers with bouncing balls on the scene")
         noBall = []
+        self.toggleControllerVisibility(deleting = True)
         for controller in controllers:
             if not self.check(controller):
                 noBall.append(controller)
@@ -281,7 +284,7 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
     def toggleControllerVisibility(self):
         cmds.undoInfo(ock=1)
         try:
-            self.bouncingBall.toggleControllerVisibility()
+            self.bouncingBall.toggleControllerVisibility(deleting = False)
         except Error as e:
             om.MGlobal.displayError(e.message)
         except Warning as e:
