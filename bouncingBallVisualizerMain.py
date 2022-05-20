@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 import os
 #sys.path.append(os.path.abspath("C:\\Users\\Usuario\\OneDrive\\Escritorio\\Arte\\Programación\\Maya\\scripts\\bouncingBallVisualizer"))
