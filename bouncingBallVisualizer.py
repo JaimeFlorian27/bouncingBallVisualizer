@@ -265,8 +265,10 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
        self.ui.isolateViewButton.clicked.connect(self.isolateViewOnControllers)
        self.ui.deleteSelectedButton.clicked.connect(self.deleteBouncingBalls)
        self.ui.deleteAllButton.clicked.connect(self.deleteBouncingBalls)
-       self.ui.radiusSlider.valueChanged.connect(self.changeRadius)
-       self.ui.radiusSpinBox.valueChanged.connect(self.changeRadius)
+       self.ui.radiusSlider.valueChanged.connect(self.updateRadius)
+       self.ui.radiusSpinBox.valueChanged.connect(self.updateRadius)
+       self.ui.radiusSlider.sliderReleased.connect(self.changeRadius)
+       self.ui.radiusSpinBox.editingFinished.connect(self.changeRadius)
     def createBouncingBall(self):
         cmds.undoInfo(ock=1)
         try:    
@@ -342,17 +344,25 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
         else:
            self.ui.radiusFrame.setVisible(False)
 
-    def changeRadius(self):
-        cmds.undoInfo(ock=1)
+    def updateRadius(self):
         try:
             sender = self.sender()
-            radius = 0
+            
             if sender == self.ui.radiusSlider:
                 radius = self.ui.radiusSlider.value()
                 self.ui.radiusSpinBox.setValue(radius)
             else:
                 radius = self.ui.radiusSpinBox.value()
                 self.ui.radiusSlider.setValue(radius)
+        except Error as e:
+            om.MGlobal.displayError(e.message)
+        except Warning as e:
+            om.MGlobal.displayWarning(e.message)
+
+    def changeRadius(self):
+        cmds.undoInfo(ock=1)
+        try:
+            radius = self.ui.radiusSlider.value()
             self.bouncingBall.changeRadius(radius)
         except Error as e:
             om.MGlobal.displayError(e.message)
