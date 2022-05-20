@@ -29,7 +29,6 @@ class Ui_BBDialog(object):
         self.radiusFrame = QFrame(self.createGroupBox)
         self.radiusFrame.setObjectName(u"radiusFrame")
         self.radiusFrame.setEnabled(True)
-        self.radiusFrame.setHidden(True)
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -46,17 +45,25 @@ class Ui_BBDialog(object):
 
         self.radiusSpinBox = QDoubleSpinBox(self.radiusFrame)
         self.radiusSpinBox.setObjectName(u"radiusSpinBox")
-        self.radiusSpinBox.setMinimum(0.010000000000000)
+        self.radiusSpinBox.setMinimum(0.020000000000000)
         self.radiusSpinBox.setMaximum(98.989999999999995)
+        self.radiusSpinBox.setSingleStep(0.100000000000000)
         self.radiusSpinBox.setValue(1.000000000000000)
 
         self.horizontalLayout.addWidget(self.radiusSpinBox)
 
         self.radiusSlider = QSlider(self.radiusFrame)
         self.radiusSlider.setObjectName(u"radiusSlider")
-        self.radiusSlider.setValue(1)
-        self.radiusSlider.setSliderPosition(1)
+        self.radiusSlider.setMinimum(2)
+        self.radiusSlider.setMaximum(10000)
+        self.radiusSlider.setSingleStep(1)
+        self.radiusSlider.setPageStep(1)
+        self.radiusSlider.setValue(100)
+        self.radiusSlider.setSliderPosition(100)
+        self.radiusSlider.setTracking(True)
         self.radiusSlider.setOrientation(Qt.Horizontal)
+        self.radiusSlider.setInvertedAppearance(False)
+        self.radiusSlider.setInvertedControls(False)
 
         self.horizontalLayout.addWidget(self.radiusSlider)
 

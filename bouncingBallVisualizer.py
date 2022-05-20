@@ -354,10 +354,10 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
             sender = self.sender()
             
             if sender == self.ui.radiusSlider:
-                radius = self.ui.radiusSlider.value()
+                radius = float(self.ui.radiusSlider.value())/100
                 self.ui.radiusSpinBox.setValue(radius)
             else:
-                radius = self.ui.radiusSpinBox.value()
+                radius = int(float(self.ui.radiusSpinBox.value())*100)
                 self.ui.radiusSlider.setValue(radius)
         except Error as e:
             om.MGlobal.displayError(e.message)
@@ -367,7 +367,7 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
     def changeRadius(self):
         cmds.undoInfo(ock=1)
         try:
-            radius = self.ui.radiusSlider.value()
+            radius = float(self.ui.radiusSlider.value())/100
             self.bouncingBall.changeRadius(radius)
         except Error as e:
             om.MGlobal.displayError(e.message)
