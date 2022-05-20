@@ -146,10 +146,15 @@ class BouncingBall:
     def isolateViewOnControllers(self):
         self.checkNode()
         previousSelected = cmds.ls(sl=1)
-        cmds.select(clear=1)
-        controllers = self.controllersFromUuid()
-        cmds.select(controllers)
         currentPanel = cmds.paneLayout('viewPanes', q=True, pane1=True)
+        cmds.select(clear=1)
+        try:
+            controllers = self.controllersFromUuid()
+        except Error as e:
+            cmds.isolateSelect( currentPanel, s=False)
+            om.MGlobal.displayWarning("No bouncing balls on scene")
+            return
+        cmds.select(controllers)
         state = cmds.isolateSelect( currentPanel,q=1, s=1)
         cmds.isolateSelect( currentPanel, s=not state)
         cmds.isolateSelect( currentPanel, addSelected=True)
