@@ -1,6 +1,6 @@
 import sys
 import os
-sys.path.append(os.path.abspath("C:\\Users\\Usuario\\OneDrive\\Escritorio\\Arte\\Programación\\Maya\\scripts\\bouncingBallVisualizer"))
+#sys.path.append(os.path.abspath("C:\\Users\\Usuario\\OneDrive\\Escritorio\\Arte\\Programación\\Maya\\scripts\\bouncingBallVisualizer"))
 #maya imports
 import maya.cmds as cmds
 import maya.mel as mel
@@ -23,6 +23,19 @@ def mayaMainWindow():
 #Error class definition
 
 class bouncingBallVisDialog(QtWidgets.QDialog):
+    dlg_instance = None
+
+    @classmethod
+    def run(cls):
+        if not cls.dlg_instance:
+            cls.dlg_instance = bouncingBallVisDialog()
+
+        if cls.dlg_instance.isHidden():
+            cls.dlg_instance.show()
+        else:
+            cls.dlg_instance.raise_()
+            cls.dlg_instance.activateWindow()
+
     def __init__(self,parent = mayaMainWindow()):
         super(bouncingBallVisDialog,self).__init__(parent)
 
@@ -157,9 +170,10 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
         event.accept()
         
 
+if __name__ == "__main__":
+    pass
 
-
-def showTestWindow():
+""" def showTestWindow():
     global win
     try:
         win.close()
@@ -168,4 +182,4 @@ def showTestWindow():
     win.setAttribute(QtCore.Qt.WA_DeleteOnClose)
     win.show()
 
-showTestWindow()
+showTestWindow() """
