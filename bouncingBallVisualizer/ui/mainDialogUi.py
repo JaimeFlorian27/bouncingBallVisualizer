@@ -29,6 +29,7 @@ class Ui_BBDialog(object):
         self.radiusFrame = QFrame(self.createGroupBox)
         self.radiusFrame.setObjectName(u"radiusFrame")
         self.radiusFrame.setEnabled(True)
+        self.radiusFrame.setHidden(True)
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -103,11 +104,6 @@ class Ui_BBDialog(object):
 
         self.gridLayout_2.addWidget(self.controllerVisibilityButton, 0, 4, 1, 2)
 
-        self.ballAllOffButton = QPushButton(self.visibilityGroupBox)
-        self.ballAllOffButton.setObjectName(u"ballAllOffButton")
-
-        self.gridLayout_2.addWidget(self.ballAllOffButton, 2, 1, 1, 1)
-
         self.isolateViewButton = QPushButton(self.visibilityGroupBox)
         self.isolateViewButton.setObjectName(u"isolateViewButton")
         sizePolicy2 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
@@ -127,10 +123,15 @@ class Ui_BBDialog(object):
 
         self.gridLayout_2.addItem(self.ButtonsHorizontalSpacer, 2, 3, 1, 1)
 
+        self.ballAllOffButton = QPushButton(self.visibilityGroupBox)
+        self.ballAllOffButton.setObjectName(u"ballAllOffButton")
+
+        self.gridLayout_2.addWidget(self.ballAllOffButton, 2, 0, 1, 1)
+
         self.ballVisibilityButton = QPushButton(self.visibilityGroupBox)
         self.ballVisibilityButton.setObjectName(u"ballVisibilityButton")
 
-        self.gridLayout_2.addWidget(self.ballVisibilityButton, 0, 1, 1, 2)
+        self.gridLayout_2.addWidget(self.ballVisibilityButton, 0, 0, 1, 3)
 
 
         self.verticalLayout.addWidget(self.visibilityGroupBox)
@@ -153,8 +154,7 @@ class Ui_BBDialog(object):
         self.verticalLayout.addWidget(self.deleteGroupBox)
 
         QWidget.setTabOrder(self.createButton, self.radiusSlider)
-        QWidget.setTabOrder(self.radiusSlider, self.ballAllOffButton)
-        QWidget.setTabOrder(self.ballAllOffButton, self.controllerVisibilityButton)
+        QWidget.setTabOrder(self.radiusSlider, self.controllerVisibilityButton)
         QWidget.setTabOrder(self.controllerVisibilityButton, self.isolateViewButton)
         QWidget.setTabOrder(self.isolateViewButton, self.deleteSelectedButton)
         QWidget.setTabOrder(self.deleteSelectedButton, self.deleteAllButton)
@@ -173,12 +173,14 @@ class Ui_BBDialog(object):
         self.ballAllOnButton.setText(QCoreApplication.translate("BBDialog", u"All on", None))
         self.controllerAllOnButton.setText(QCoreApplication.translate("BBDialog", u"All on", None))
         self.controllerVisibilityButton.setText(QCoreApplication.translate("BBDialog", u"nurbsCurve visibility", None))
-        self.ballAllOffButton.setText(QCoreApplication.translate("BBDialog", u"All off", None))
         self.isolateViewButton.setText(QCoreApplication.translate("BBDialog", u"Isolate view on Controllers", None))
         self.controllerAllOffButton.setText(QCoreApplication.translate("BBDialog", u"All off", None))
+        self.ballAllOffButton.setText(QCoreApplication.translate("BBDialog", u"All off", None))
         self.ballVisibilityButton.setText(QCoreApplication.translate("BBDialog", u"Ball visibility", None))
         self.deleteGroupBox.setTitle(QCoreApplication.translate("BBDialog", u"Delete Bouncing ball", None))
         self.deleteSelectedButton.setText(QCoreApplication.translate("BBDialog", u"Delete from selected", None))
         self.deleteAllButton.setText(QCoreApplication.translate("BBDialog", u"Delete all", None))
     # retranslateUi
 
+if __name__ == "__main__":
+    pass

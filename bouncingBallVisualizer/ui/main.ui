@@ -157,13 +157,6 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QPushButton" name="ballAllOffButton">
-        <property name="text">
-         <string>All off</string>
-        </property>
-       </widget>
-      </item>
       <item row="3" column="0" colspan="6">
        <widget class="QPushButton" name="isolateViewButton">
         <property name="sizePolicy">
@@ -200,7 +193,14 @@
         </property>
        </spacer>
       </item>
-      <item row="0" column="1" colspan="2">
+      <item row="2" column="0">
+       <widget class="QPushButton" name="ballAllOffButton">
+        <property name="text">
+         <string>All off</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="3">
        <widget class="QPushButton" name="ballVisibilityButton">
         <property name="text">
          <string>Ball visibility</string>
@@ -238,7 +238,6 @@
  <tabstops>
   <tabstop>createButton</tabstop>
   <tabstop>radiusSlider</tabstop>
-  <tabstop>ballAllOffButton</tabstop>
   <tabstop>controllerVisibilityButton</tabstop>
   <tabstop>isolateViewButton</tabstop>
   <tabstop>deleteSelectedButton</tabstop>
