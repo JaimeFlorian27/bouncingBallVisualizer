@@ -52,6 +52,7 @@ class BouncingBall:
             #selects sphere's shape
             self.controllers.append(controller)
         cmds.select(controllers)
+        self.toggleControllerVisibility(deleting=False)
         if notAdded:
             om.MGlobal.displayWarning("Skipped : %s , Object(s) already had a bouncing ball." %(",".join(notAdded)) )
 

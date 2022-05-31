@@ -45,6 +45,7 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
         self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
         self.createConnections()
         self.sJob = cmds.scriptJob(event=['SelectionChanged', self.selectionChanged])
+        self.checkScriptJob()
 
     def createConnections(self):
        self.ui.createButton.clicked.connect(self.createBouncingBall)
@@ -63,6 +64,7 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
        self.ui.radiusSpinBox.editingFinished.connect(self.changeRadius)
     def createBouncingBall(self):
         cmds.undoInfo(ock=1)
+        self.checkScriptJob()
         try:    
             self.bouncingBall.create()
         except Error as e:
@@ -71,8 +73,18 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
             om.MGlobal.displayWarning(e.message)
         cmds.undoInfo(cck=1)
 
+    def checkScriptJob(self):
+        controllers = cmds.ls(sl = 1, tr=1)
+        exists = False
+        if self.sJob:
+            exists = cmds.scriptJob(ex= int(self.sJob))
+        if not exists:
+            self.sJob = cmds.scriptJob(event=['SelectionChanged', self.selectionChanged])
+        cmds.select(controllers)
+
     def toggleBallVisibility(self):
         cmds.undoInfo(ock=1)
+        self.checkScriptJob()
         try:
             self.bouncingBall.toggleBallVisibility()
         except Error as e:
@@ -83,6 +95,7 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
 
     def toggleControllerVisibility(self):
         cmds.undoInfo(ock=1)
+        self.checkScriptJob()
         try:
             self.bouncingBall.toggleControllerVisibility(deleting = False)
         except Error as e:
@@ -93,6 +106,7 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
 
     def AllObjectsVisibility(self):
         cmds.undoInfo(ock=1)
+        self.checkScriptJob()
         sender = self.sender()
         try:
             if sender == self.ui.controllerAllOffButton:
@@ -109,6 +123,7 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
             om.MGlobal.displayWarning(e.message)
         cmds.undoInfo(cck=1)
     def isolateViewOnControllers(self):
+        self.checkScriptJob()
         try:
             self.bouncingBall.isolateViewOnControllers()
         except Error as e:
@@ -117,6 +132,7 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
             om.MGlobal.displayWarning(e.message)
     def deleteBouncingBalls(self):
         cmds.undoInfo(ock=1)
+        self.checkScriptJob()
         sender = self.sender()
         try:
             if sender == self.ui.deleteAllButton:
@@ -137,6 +153,7 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
            self.ui.radiusFrame.setVisible(False)
 
     def updateRadius(self):
+        self.checkScriptJob()
         try:
             sender = self.sender()
             
@@ -153,6 +170,7 @@ class bouncingBallVisDialog(QtWidgets.QDialog):
 
     def changeRadius(self):
         cmds.undoInfo(ock=1)
+        self.checkScriptJob()
         try:
             radius = float(self.ui.radiusSlider.value())/100
             self.bouncingBall.changeRadius(radius)
