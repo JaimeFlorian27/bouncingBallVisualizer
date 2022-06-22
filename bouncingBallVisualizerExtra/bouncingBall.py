@@ -38,12 +38,15 @@ class BouncingBall:
             cmds.parent(sphere_shape,controller,r=1, s=1)
             #save sphere's shape new long name 
             sphere_shape = cmds.ls(sl=1, l=1)
-
+            #move sphere to controllers position
             pivot = cmds.xform(controller, piv=True , q=True , ws=True)
             vtxs = cmds.ls("%s.vtx[*]"%sphere_shape[0], fl=True)
             for vtx in vtxs:
                 cmds.move(pivot[0],pivot[1],pivot[2], vtx,a=1, ws=1)
-
+            
+            scale = self.getBoundingBoxRadius(controller)
+            for vtx in vtxs:
+                cmds.scale(scale/2,scale/2,scale/2,vtx, p =(pivot[0],pivot[1],pivot[2]), a=1, ws=1) 
             #set checker texture 
             cmds.sets( e=True, forceElement= 'bouncingBallSG' )
             #Selectes adn deletes old transform node
@@ -234,6 +237,24 @@ class BouncingBall:
         cmds.connectAttr("%s.outColor" %checker, "%s.color" %material )
         sg = cmds.sets(name="bouncingBallSG" , empty=True, renderable=True, noSurfaceShader=True)
         cmds.connectAttr("%s.outColor" % material, "%s.surfaceShader" % sg)
+    
+    def getBoundingBoxRadius(self, object):
+        boundingBox = []    
+        boundingBox.append(cmds.getAttr("%s.boundingBoxMinX"%object))
+        boundingBox.append(cmds.getAttr("%s.boundingBoxMinY"%object))
+        boundingBox.append(cmds.getAttr("%s.boundingBoxMinZ"%object))
+
+        boundingBox.append(cmds.getAttr("%s.boundingBoxMaxX"%object))
+        boundingBox.append(cmds.getAttr("%s.boundingBoxMaxY"%object))
+        boundingBox.append(cmds.getAttr("%s.boundingBoxMaxZ" %object))
+        xyz = []
+        xyz.append(abs(boundingBox[3]-boundingBox[0]))
+        xyz.append(abs(boundingBox[4]-boundingBox[1]))
+        xyz.append(abs(boundingBox[5]-boundingBox[2]))
+        return(max(xyz))
+
+
+
 
 if __name__ == "__main__":
     pass

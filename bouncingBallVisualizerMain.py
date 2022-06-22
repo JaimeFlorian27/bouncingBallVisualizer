@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
-#sys.path.append(os.path.abspath("C:\\Users\\Usuario\\OneDrive\\Escritorio\\Arte\\Programación\\Maya\\scripts\\bouncingBallVisualizer"))
+sys.path.append(os.path.abspath("C:\\Users\\Usuario\\OneDrive\\Escritorio\\Arte\\Programación\\Maya\\scripts\\bouncingBallVisualizer\\bouncingBallVisualizer"))
+sys.path.append(os.path.abspath("C:\\Users\\Usuario\\OneDrive\\Escritorio\\Arte\\Programación\\Maya\\scripts\\bouncingBallVisualizer\\bouncingBallVisualizer\\bouncingBallVisualizerExtra"))
 #maya imports
 import maya.cmds as cmds
 import maya.mel as mel
@@ -11,8 +12,10 @@ import maya.OpenMaya as om
 from PySide2 import QtCore,QtWidgets,QtGui
 
 #bouncingBall imports
-from bouncingBallVisualizer.bouncingBall import BouncingBall, Error, Warning
-from bouncingBallVisualizer.ui.mainDialogUi import Ui_BBDialog
+import bouncingBallVisualizerExtra.bouncingBall
+reload(bouncingBallVisualizerExtra.bouncingBall)
+from bouncingBallVisualizerExtra.bouncingBall import BouncingBall, Error, Warning
+from bouncingBallVisualizerExtra.ui.mainDialogUi import Ui_BBDialog
 
 from shiboken2 import wrapInstance
 
